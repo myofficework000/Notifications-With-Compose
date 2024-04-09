@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">NotificationsTypes</string>
+    <string name="media_notification_channel">MediaNotification</string>
+    <string name="media_notification_channel_description">MediaNotification</string>
+    <string name="generic_error">error</string>
+    <string name="error_media_not_found">media not found</string>
+</resources>
