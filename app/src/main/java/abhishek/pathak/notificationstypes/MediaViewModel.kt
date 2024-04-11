@@ -35,11 +35,6 @@ import javax.inject.Inject
 class MediaViewModel @Inject constructor(
     val player: ExoPlayer
 ) : ViewModel() {
-
-    companion object {
-        const val SESSION_INTENT_REQUEST_CODE = 0
-    }
-
     private val playlist = arrayListOf(
         TrackItem(
             "1",
@@ -301,6 +296,10 @@ class MediaViewModel @Inject constructor(
     private fun syncPlayerFlows() {
         _currentPlayingIndex.value = player.currentMediaItemIndex
         _totalDurationInMS.value = player.duration.coerceAtLeast(0L)
+    }
+
+    companion object {
+        const val SESSION_INTENT_REQUEST_CODE = 0
     }
 }
 
