@@ -319,5 +319,5 @@ sealed interface PlayerUIState {
     /**
      * Represents the state when the player UI is in a loading state.
      */
-    object Loading : PlayerUIState
+    data object Loading : PlayerUIState
 }
