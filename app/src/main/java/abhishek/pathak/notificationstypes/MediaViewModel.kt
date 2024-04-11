@@ -303,7 +303,7 @@ class MediaViewModel @Inject constructor(
     }
 }
 
-private const val TAG = "MediaAppTag"
+private const val TAG = "Media3AppTag"
 
 /**
  * Sealed interface representing the different states of the player UI.
