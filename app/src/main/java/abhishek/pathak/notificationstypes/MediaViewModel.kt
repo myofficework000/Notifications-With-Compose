@@ -40,7 +40,7 @@ class MediaViewModel @Inject constructor(
             "1",
             "https://www.matb3aa.com/music/Wegz/Dorak.Gai-Wegz-MaTb3aa.Com.mp3",
             "https://angartwork.anghcdn.co/?id=105597079&size=640",
-            "Dorak Gai",
+            "Track 1",
             "Wegz",
             "4:18"
         ),
