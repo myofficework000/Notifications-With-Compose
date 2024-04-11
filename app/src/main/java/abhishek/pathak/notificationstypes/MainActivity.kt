@@ -33,6 +33,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * Activity responsible for handling notifications and displaying notification-related UI.
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var notificationManager: NotificationManager
@@ -40,6 +43,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var notificationBuilder: Notification.Builder
     private val channelId = "ChannelId"
 
+    /**
+     * Called when the activity is starting.
+     */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,13 +56,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    askPermissions()
-                    NotificationUI(onMediaClick())
+                    RequestNotificationPermissions()
+                    NotificationUI(OnMediaClick())
                 }
             }
         }
     }
 
+    /**
+     * Composable function to display the notification-related UI elements.
+     */
     @Composable
     fun NotificationUI(onMediaClick: (Unit)) {
         Column {
@@ -75,8 +84,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Function to handle media click.
+     */
     @Composable
-    private fun onMediaClick() {
+    private fun OnMediaClick() {
         val viewModel: MediaViewModel = hiltViewModel()
 
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -100,7 +112,8 @@ class MainActivity : ComponentActivity() {
             is PlayerUIState.Tracks -> {
                 Column(modifier = Modifier.fillMaxSize()) {
                     AudioPlayerView(viewModel)
-                    PlayerControlsView(currentTrackImage = (uiState as PlayerUIState.Tracks).items[currentTrackState].teaserUrl,
+                    PlayerControlsView(
+                        currentTrackImage = (uiState as PlayerUIState.Tracks).items[currentTrackState].teaserUrl,
                         totalDuration = totalDurationState,
                         currentPosition = currentPositionState,
                         isPlaying = isPlayingState,
@@ -113,7 +126,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
+    /**
+     * Function to invoke big picture style notification.
+     */
     private fun invokeBigPictureStyle() {
         getNotificationChannel()
 
@@ -130,6 +145,9 @@ class MainActivity : ComponentActivity() {
         notificationManager.notify(1, notificationBuilder.build())
     }
 
+    /**
+     * Function to invoke message style notification.
+     */
     private fun invokeMessageStyle() {
         getNotificationChannel()
 
@@ -154,6 +172,9 @@ class MainActivity : ComponentActivity() {
         notificationManager.notify(1, notificationBuilder.build())
     }
 
+    /**
+     * Function to invoke simple style notification.
+     */
     fun invokeSimpleStyle() {
         getNotificationChannel()
 
@@ -166,6 +187,9 @@ class MainActivity : ComponentActivity() {
         notificationManager.notify(1, notificationBuilder.build())
     }
 
+    /**
+     * Function to set a pending intent for notification.
+     */
     private fun setPendingIntent(context: Context): PendingIntent? {
         val intent = Intent(context, MainActivity::class.java)
         return PendingIntent.getActivity(
@@ -174,6 +198,9 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    /**
+     * Function to get notification channel.
+     */
     private fun getNotificationChannel() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE)
                 as NotificationManager
@@ -190,3 +217,4 @@ class MainActivity : ComponentActivity() {
         notificationManager.createNotificationChannel(notificationChannel)
     }
 }
+

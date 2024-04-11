@@ -5,10 +5,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.*
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
@@ -19,7 +23,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -298,8 +306,19 @@ class MediaViewModel @Inject constructor(
 
 private const val TAG = "MediaAppTag"
 
-
+/**
+ * Sealed interface representing the different states of the player UI.
+ */
 sealed interface PlayerUIState {
+    /**
+     * Represents the state when the player UI displays a list of tracks.
+     *
+     * @property items The list of track items to be displayed.
+     */
     data class Tracks(val items: List<TrackItem>) : PlayerUIState
+
+    /**
+     * Represents the state when the player UI is in a loading state.
+     */
     object Loading : PlayerUIState
 }
