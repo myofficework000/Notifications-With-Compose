@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -35,6 +34,11 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
 
+/**
+ * Composable function to display the audio player view.
+ * This composable sets up and displays the ExoPlayer view for audio playback.
+ * @param viewModel The view model for managing media playback.
+ */
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
 fun AudioPlayerView(viewModel: MediaViewModel) {
@@ -59,10 +63,23 @@ fun AudioPlayerView(viewModel: MediaViewModel) {
             }
         })
     ) {
+        // Disposes the player when the composable is removed from the composition
         onDispose { viewModel.onDestroy() }
     }
 }
 
+
+/**
+ * Composable function to display the player controls.
+ * This composable displays controls for managing audio playback, including a slider for track progress,
+ * buttons for rewinding, playing/pausing, and skipping tracks, and current track information.
+ * @param currentTrackImage The image URL of the current track.
+ * @param totalDuration The total duration of the current track.
+ * @param currentPosition The current position within the track.
+ * @param isPlaying Whether the track is currently playing or paused.
+ * @param navigateTrack Function to navigate to the next or previous track.
+ * @param seekPosition Function to seek to a specific position within the track.
+ */
 @Composable
 fun PlayerControlsView(
     currentTrackImage: String,
@@ -72,22 +89,24 @@ fun PlayerControlsView(
     navigateTrack: (ControlButtons) -> Unit,
     seekPosition: (Float) -> Unit
 ) {
-
     Column(
         Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
+        // Spacer for layout
         Spacer(modifier = Modifier.height(40.dp))
+
+        // Display current track image
         AsyncImage(
             modifier = Modifier
                 .size(200.dp)
                 .clip(CircleShape),
             model = currentTrackImage,
-            contentDescription = "player_image"
+            contentDescription = "Player Image"
         )
 
+        // Slider for track progress
         Slider(
             modifier = Modifier
                 .fillMaxWidth()
@@ -95,14 +114,14 @@ fun PlayerControlsView(
             value = (currentPosition / 1000).toFloat(),
             valueRange = 0f..(totalDuration / 1000).toFloat(),
             onValueChange = { seekPosition(it) },
-            colors =
-            SliderDefaults.colors(
+            colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.tertiary,
                 activeTickColor = MaterialTheme.colorScheme.onBackground,
                 activeTrackColor = MaterialTheme.colorScheme.tertiary
             )
         )
 
+        // Display current position and total duration
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -114,6 +133,7 @@ fun PlayerControlsView(
             Text(text = totalDuration.toString())
         }
 
+        // Row for control buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -121,34 +141,41 @@ fun PlayerControlsView(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(modifier = Modifier
-                .size(45.dp),
-                onClick = { navigateTrack(ControlButtons.Rewind) }) {
+            // Rewind button
+            IconButton(
+                modifier = Modifier.size(45.dp),
+                onClick = { navigateTrack(ControlButtons.Rewind) }
+            ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.baseline_autorenew_24),
-                    contentDescription = "player_rewind",
+                    contentDescription = "Rewind",
                     tint = Color.Red
                 )
             }
-            Spacer(modifier = Modifier.width(30.dp))
-            IconButton(modifier = Modifier
-                .size(70.dp),
-                onClick = { navigateTrack(ControlButtons.Play) }) {
+
+            // Play/pause button
+            IconButton(
+                modifier = Modifier.size(70.dp),
+                onClick = { navigateTrack(ControlButtons.Play) }
+            ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(id = if (isPlaying) R.drawable.baseline_pause_circle_24 else R.drawable.baseline_play_circle_24),
-                    contentDescription = "player_play",
+                    imageVector = ImageVector.vectorResource(
+                        id = if (isPlaying) R.drawable.baseline_pause_circle_24 else R.drawable.baseline_play_circle_24
+                    ),
+                    contentDescription = if (isPlaying) "Pause" else "Play",
                     tint = Color.Red,
-                    modifier = Modifier
-                        .size(70.dp)
+                    modifier = Modifier.size(70.dp)
                 )
             }
-            Spacer(modifier = Modifier.width(30.dp))
-            IconButton(modifier = Modifier
-                .size(45.dp),
-                onClick = { navigateTrack(ControlButtons.Next) }) {
+
+            // Next button
+            IconButton(
+                modifier = Modifier.size(45.dp),
+                onClick = { navigateTrack(ControlButtons.Next) }
+            ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.baseline_skip_next_24),
-                    contentDescription = "player_next",
+                    contentDescription = "Next",
                     tint = Color.Red
                 )
             }
@@ -156,6 +183,14 @@ fun PlayerControlsView(
     }
 }
 
+/**
+ * Composable function to display the playlist.
+ * This composable displays a list of track items in a lazy column, where each track item is represented
+ * by the `PlaylistItemView` composable. It also highlights the currently playing track based on the
+ * `currentTrack` parameter.
+ * @param tracks The list of track items in the playlist.
+ * @param currentTrack The index of the current track in the playlist.
+ */
 @Composable
 fun PlaylistView(tracks: List<TrackItem>, currentTrack: Int) {
     LazyColumn {
@@ -165,19 +200,27 @@ fun PlaylistView(tracks: List<TrackItem>, currentTrack: Int) {
     }
 }
 
+/**
+ * Composable function to display a single track item in the playlist.
+ * This composable displays a single track item within a row layout. Each track item includes an image,
+ * title, artist name, and duration. The background color of the row is changed to blue if the track
+ * is currently playing, otherwise it remains transparent.
+ * @param trackItem The track item to display.
+ * @param isPlaying Whether the track is currently playing.
+ */
 @Composable
 fun PlaylistItemView(trackItem: TrackItem, isPlaying: Boolean) {
     Row(
-        Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .background(if (isPlaying) Color.Blue else Color.Transparent),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-
+        // Display the track image
         TrackImageView(imageUrl = trackItem.teaserUrl)
 
+        // Display the track title and artist name in a column
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.Start,
@@ -187,11 +230,18 @@ fun PlaylistItemView(trackItem: TrackItem, isPlaying: Boolean) {
             Text(text = trackItem.artistName)
         }
 
+        // Display the track duration
         Text(text = trackItem.duration)
     }
 }
 
-
+/**
+ * Composable function to display the image of a track.
+ * This composable displays the image of a track using the `AsyncImage` composable. It allows specifying
+ * the size of the image and the URL of the image to load.
+ * @param size The size of the image.
+ * @param imageUrl The URL of the track image.
+ */
 @Composable
 fun TrackImageView(size: Dp = 75.dp, imageUrl: String) {
     AsyncImage(

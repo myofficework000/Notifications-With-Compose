@@ -18,12 +18,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-const val NOW_PLAYING_CHANNEL_ID = "com.semba.media.NOW_PLAYING"
-const val NOW_PLAYING_NOTIFICATION_ID = 0xb339 // Arbitrary number used to identify our notification
-
 /**
- * A wrapper class for ExoPlayer's PlayerNotificationManager. It sets up the notification shown to
- * the user during audio playback and provides track metadata, such as track title and icon image.
+ * A wrapper class for ExoPlayer's PlayerNotificationManager.
+ * It sets up the notification shown to the user during audio playback and provides track metadata,
+ * such as track title and icon image.
+ * @param context The context used to create the notification.
+ * @param sessionToken The session token used to build MediaController.
+ * @param player The ExoPlayer instance.
+ * @param notificationListener The listener for notification events.
  */
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class MediaNotificationManager(
@@ -63,10 +65,17 @@ class MediaNotificationManager(
 
     }
 
+    /**
+     * Hides the notification.
+     */
     fun hideNotification() {
         notificationManager.setPlayer(null)
     }
 
+    /**
+     * Shows the notification for the given player.
+     * @param player The player instance for which the notification is shown.
+     */
     fun showNotificationForPlayer(player: Player) {
         notificationManager.setPlayer(player)
     }
@@ -121,8 +130,24 @@ class MediaNotificationManager(
     }
 }
 
+/**
+ * The size of the large icon for the notification in pixels.
+ */
 const val NOTIFICATION_LARGE_ICON_SIZE = 144 // px
 
+/**
+ * The channel ID for the notification.
+ */
+const val NOW_PLAYING_CHANNEL_ID = "media.NOW_PLAYING"
+
+/**
+ * The notification ID.
+ */
+const val NOW_PLAYING_NOTIFICATION_ID = 0xb339 // Arbitrary number used to identify our notification
+
+/**
+ * Default options for Glide.
+ */
 private val glideOptions = RequestOptions()
     .fallback(R.drawable.baseline_play_circle_24)
     .diskCacheStrategy(DiskCacheStrategy.DATA)

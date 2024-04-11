@@ -12,20 +12,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
+/**
+ * Composable function to request notification permissions.
+ * This composable requests notification permissions using the `ActivityResultContracts.RequestPermission`
+ * contract. It updates the state based on the permission result, allowing the caller to react accordingly.
+ * @throws SecurityException if the permission is denied.
+ */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun askPermissions() {
-
+fun RequestNotificationPermissions() {
+    // State to track whether notification permission is granted
     var hasNotificationPermission by remember { mutableStateOf(false) }
 
-    // Request camera permission and update state based on the result
+    // Request notification permission and update state based on the result
     val permissionResult = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { hasNotificationPermission = it }
     )
 
-    // Request camera permission when the component is launched
+    // Request notification permission when the component is launched
     LaunchedEffect(key1 = true) {
         permissionResult.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }
+
